@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule
+	xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties"
+	xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd">
+	<http:listener-config
+		name="toy-store-papi-httpListenerConfig">
+		<http:listener-connection
+			host="${http.listener.host}" port="${http.listener.port}" />
+	</http:listener-config>
+	<apikit:config name="toy-store-papi-config"
+		api="resource::89799b47-5637-405f-94db-38eccef79285:toy-store-papi:1.0.0:raml:zip:toy-store-papi.raml"
+		outboundHeadersMapName="outboundHeaders"
+		httpStatusVarName="httpStatus" />
+	<global-property doc:name="Global Property" doc:id="1f25de95-54db-4a95-b1e0-086c4a4d0d8d" name="mule.env" value="loc" />
+	<configuration-properties doc:name="Configuration properties" doc:id="be88f756-73f7-42b2-b774-ac31afb6e15c" file="properties/${mule.env}.yaml" />
+	<global-property doc:name="Global Property" doc:id="1f307cdd-376a-4a19-8c2f-867908718c53" name="key.store" value="toystore" />
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="8a98f683-acef-4613-aeb1-97385950b58e" file="properties/${mule.env}-secure.yaml" key="${key.store}" >
+		<secure-properties:encrypt algorithm="Blowfish" />
+	</secure-properties:config>
+	<http:request-config name="HTTP_Request_config" doc:name="HTTP Request config" doc:id="31d2fcc6-96d1-4ffc-ba73-bc9e10e96e20" basePath="/api" >
+		<http:request-connection host="${http.request.host}" port="${http.request.port}" />
+	</http:request-config>
+</mule>
