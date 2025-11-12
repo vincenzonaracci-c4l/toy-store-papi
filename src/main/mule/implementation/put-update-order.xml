@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
-	xmlns:amqp="http://www.mulesoft.org/schema/mule/amqp"
-	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:amqp="http://www.mulesoft.org/schema/mule/amqp" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/amqp http://www.mulesoft.org/schema/mule/amqp/current/mule-amqp.xsd
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
-http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
-	<sub-flow name="put-update-order" doc:id="96645f5e-0d2a-4fd4-8c25-a15a61110893" >
-		<logger level="INFO" doc:name="Logger" doc:id="7dd96297-b308-4f3f-b0f1-faed08fd804a" />
-	</sub-flow>
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<flow name="put-update-order" doc:id="426dc68a-7766-4cf7-9081-0c9a60635f30" >
+		<amqp:listener doc:name="Listener" doc:id="6c5cc9c0-e5d0-40a3-b7cc-c382c5c92f69" config-ref="AMQP_Config" queueName="put-update-order" ackMode="MANUAL"/>
+		<set-variable value="#[attributes.ackId]" doc:name="ackId" doc:id="a65462bf-dfe6-4507-b146-5edc87c53757" variableName="ackId"/>
+		<http:request doc:name="Request to sAPI to update a specific order of a specific customer" doc:id="ee478b9d-e8ca-4b5b-bc9c-d25000fc07f9" config-ref="HTTP_Request_config" method="PUT" path="/customer/{customerID}/orders" sendCorrelationId="ALWAYS">
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"customerID" : payload.URIparams
+}]]]></http:uri-params>
+		</http:request>
+		<amqp:ack doc:name="Ack" doc:id="e36f798b-4412-4cd2-8a40-a59c8d8b74d5" ackId="#[vars.ackId]"/>
+	</flow>
 </mule>
