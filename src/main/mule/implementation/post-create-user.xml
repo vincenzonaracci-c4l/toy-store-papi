@@ -1,12 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:amqp="http://www.mulesoft.org/schema/mule/amqp"
-	xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:amqp="http://www.mulesoft.org/schema/mule/amqp"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/amqp http://www.mulesoft.org/schema/mule/amqp/current/mule-amqp.xsd
-http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 	<flow name="post-create-user" doc:id="43ab084d-3900-433f-84ce-369b5573e590" >
-		<amqp:listener doc:name="Listener" doc:id="ccb409cd-a9f7-4a8d-adf9-cd7207c05ba5" config-ref="AMQP_Config" queueName="post-create-customer" ackMode="MANUAL"/>
-		<logger level="INFO" doc:name="Logger" doc:id="571bc581-067d-43f5-a954-e341e22cdbcb" />
+		<amqp:listener doc:name="Listener at the queue post-create-customer" doc:id="ccb409cd-a9f7-4a8d-adf9-cd7207c05ba5" config-ref="AMQP_Config" queueName="post-create-customer" ackMode="MANUAL"/>
+		<ee:transform doc:name="Split the payload in two variable (customer and orders)" doc:id="756a7aa7-afb4-42f2-baa1-b70e333acd9e" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="customer" ><![CDATA[%dw 2.0
+output application/json  
+---
+payload filterObject ((value, key) -> !(key as String contains "orders"))
+         update {
+            case .gender -> if($ == "Male") "M" else if($ == "Female") "F" else "O"
+        }]]></ee:set-variable>
+				<ee:set-variable variableName="orders" ><![CDATA[%dw 2.0
+output application/json
+---
+payload.orders map ((item, index) -> 
+{
+	"quantity": item.quantity,
+	"discount": item.discount,
+	"description": item.order.description,
+	"brand": item.order.brand,
+	"price": item.order.price
+})]]></ee:set-variable>
+				<ee:set-variable variableName="ackID" ><![CDATA[%dw 2.0
+output application/java
+---
+attributes.ackId]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<http:request doc:name="Request to sAPI to create a new customer" doc:id="f4518da3-7c0a-4bc8-8afe-2af11403a1f9" config-ref="HTTP_Request_config" method="POST" path="/customer">
+			<http:body ><![CDATA[#[vars.customer]]]></http:body>
+		</http:request>
+		<http:request doc:name="Request to sAPI to create the customer's order" doc:id="5a3b290d-65c4-4302-b960-595a25d3ecb8" method="POST" path="/customer/{customerID}/orders" config-ref="HTTP_Request_config">
+			<http:body ><![CDATA[#[vars.orders]]]></http:body>
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"customerID" : payload.user_id[0]
+}]]]></http:uri-params>
+		</http:request>
+		<amqp:ack doc:name="Ack" doc:id="e9e39d15-a604-43da-952e-b64e3efc6bd2" ackId="#[vars.ackID]"/>
 	</flow>
 </mule>

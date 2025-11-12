@@ -35,7 +35,7 @@ http://www.mulesoft.org/schema/mule/amqp http://www.mulesoft.org/schema/mule/amq
 	</secure-properties:config>
 	<http:request-config name="HTTP_Request_config"
 		doc:name="HTTP Request config"
-		doc:id="31d2fcc6-96d1-4ffc-ba73-bc9e10e96e20" basePath="/api">
+		doc:id="31d2fcc6-96d1-4ffc-ba73-bc9e10e96e20" basePath="/api" sendCorrelationId="ALWAYS">
 		<http:request-connection
 			host="${http.request.host}" port="${http.request.port}" />
 	</http:request-config>
