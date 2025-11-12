@@ -31,7 +31,7 @@ payload.orders map ((item, index) ->
 	"price": item.order.price
 })]]></ee:set-variable>
 				<ee:set-variable variableName="ackID" ><![CDATA[%dw 2.0
-output application/java
+output application/json
 ---
 attributes.ackId]]></ee:set-variable>
 			</ee:variables>
