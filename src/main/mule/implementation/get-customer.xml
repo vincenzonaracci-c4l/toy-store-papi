@@ -1,16 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 	<sub-flow name="get-customer" doc:id="f1196303-c8a6-41cc-81c1-99d3735d3d3c" >
-		<http:request doc:name="Request to sAPI to get a single customer" doc:id="e87b1c47-69b7-4a7c-9322-d70d3dad5413" config-ref="HTTP_Request_config" path="/customer/{customerID}">
+		<http:request doc:name="Request to sAPI to get a single customer" doc:id="e87b1c47-69b7-4a7c-9322-d70d3dad5413" config-ref="HTTP_Request_config" path="/customer/{customerID}" target="customer">
 			<http:uri-params ><![CDATA[#[output application/java
 ---
 {
 	"customerID" : vars.URIparams
 }]]]></http:uri-params>
 		</http:request>
+		<http:request doc:name="Request to sAPI to get the orders of a single customer" doc:id="f694bbf6-1400-44b7-afe7-1dfdee6cb936" config-ref="HTTP_Request_config" path="/customer/{customerID}/orders" target="orders">
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"customerID" : vars.URIparams
+}]]]></http:uri-params>
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="acaf502b-764b-4388-b60b-1398fe87f1fc" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+fun sumNumber(x) = do {
+	x reduce ((item, acc) -> acc + item)
+}
+fun concatenate(x) = do {
+	x reduce ((item, acc) -> acc ++ " - " ++ item)
+}
+output application/json
+---
+vars.customer map ((item, index) -> {
+	"customerCode": item.user_id,
+	"customerInfo": {
+		"firstName": item.first_name,
+		"lastName": item.last_name,
+		"gender": if ( item.gender == "M" ) "Male"
+      else if ( item.gender == "F" ) "Female"
+      else
+        "Other",
+		"address": {
+			"street": item.street,
+			"city": item.city,
+			"state": item.state
+		},
+		"orders": {
+			"products": concatenate(vars.orders.product_name),
+			"totalSpending": sumNumber(vars.orders.price),
+			"totalDiscount": sumNumber(vars.orders.discount)
+		}
+	}
+})]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
 	</sub-flow>
 </mule>
