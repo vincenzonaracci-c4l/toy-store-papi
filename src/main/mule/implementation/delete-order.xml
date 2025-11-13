@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:amqp="http://www.mulesoft.org/schema/mule/amqp" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
-	xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:amqp="http://www.mulesoft.org/schema/mule/amqp"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
-http://www.mulesoft.org/schema/mule/amqp http://www.mulesoft.org/schema/mule/amqp/current/mule-amqp.xsd">
-	<sub-flow name="delete-order" doc:id="b83498bb-db8f-450d-9726-0eaca74e18cb" >
-		<logger level="INFO" doc:name="Logger" doc:id="95351305-a8a6-4510-a1a6-081a91aed6a6" />
-	</sub-flow>
+http://www.mulesoft.org/schema/mule/amqp http://www.mulesoft.org/schema/mule/amqp/current/mule-amqp.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<flow name="delete-order" doc:id="8c87c269-8bab-4343-b854-ab8a0eb835d9" >
+		<amqp:listener doc:name="Listener to the queue put-update-order" doc:id="974669b6-ceb5-4c73-98eb-4b74d13990e6" config-ref="AMQP_Config" queueName="delete-order" ackMode="MANUAL" />
+		<set-variable value="#[attributes.ackId]" doc:name="ackId" doc:id="68d76204-5ff6-4634-99b9-d3f76cc6dd12" variableName="ackId" />
+		<logger level="INFO" doc:name="Logger before the request to the sAPI" doc:id="9b2b684f-1b2b-4f47-af3a-372d03122a68" message='#[%dw 2.0&#10;output application/java&#10;---&#10;"Before the request to the sAPI, with following body: " ++ write(payload, "application/json")]' />
+		<http:request doc:name="Request to sAPI to delete a specific customer" doc:id="13738d53-814b-4472-85aa-7b3077f5cc01" config-ref="HTTP_Request_config" method="DELETE" path="/customer/{customerID}/orders" >
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"customerID" : payload.customerCode
+}]]]></http:uri-params>
+		</http:request>
+		<logger level="INFO" doc:name="Logger after the request to the sAPI" doc:id="adff5d99-c7d0-4e7f-9866-75ad2cc29848" message='#[%dw 2.0&#10;output application/java&#10;---&#10;"After the request to the sAPI, with following body: " ++ write(payload, "application/json")]' />
+		<amqp:ack doc:name="Send ack to the queue" doc:id="698ce853-a35b-4820-849a-6d727b2715a4" ackId="#[vars.ackId]" />
+	</flow>
 </mule>

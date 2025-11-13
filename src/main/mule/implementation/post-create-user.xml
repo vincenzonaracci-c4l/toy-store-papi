@@ -8,6 +8,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 	<flow name="post-create-user" doc:id="43ab084d-3900-433f-84ce-369b5573e590" >
 		<amqp:listener doc:name="Listener at the queue post-create-customer" doc:id="ccb409cd-a9f7-4a8d-adf9-cd7207c05ba5" config-ref="AMQP_Config" queueName="post-create-customer" ackMode="MANUAL"/>
+		<logger level="INFO" doc:name="Logger before to split the payload" doc:id="51b6ecbe-661f-41d7-a672-f22a960c110c" message='#[%dw 2.0&#10;output application/java&#10;---&#10;"Before to split the payload, with following body: " ++ write(payload, "application/json")]' />
 		<ee:transform doc:name="Split the payload and store the ackId" doc:id="756a7aa7-afb4-42f2-baa1-b70e333acd9e" >
 			<ee:message >
 			</ee:message>
@@ -24,6 +25,7 @@ output application/json
 ---
 payload.orders map ((item, index) -> 
 {
+	"orderCode": item.orderCode,
 	"quantity": item.quantity,
 	"discount": item.discount,
 	"description": item.order.description,
@@ -36,20 +38,20 @@ output application/json
 attributes.ackId]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
-		<logger level="INFO" doc:name="Logger before the request" doc:id="0745ee13-07ff-4baf-9cc7-9b36cbdfe595" message="#[payload]" />
+		<logger level="INFO" doc:name="Logger before the request to the sAPI" doc:id="aa6d8902-3880-427f-ade5-b6ff33667215" message='#[%dw 2.0&#10;output application/java&#10;---&#10;"Before the request to the sAPI, with following body: " ++ write(payload, "application/json")]' />
 		<http:request doc:name="Request to sAPI to create a new customer" doc:id="f4518da3-7c0a-4bc8-8afe-2af11403a1f9" config-ref="HTTP_Request_config" method="POST" path="/customer">
 			<http:body ><![CDATA[#[vars.customer]]]></http:body>
 		</http:request>
-		<logger level="INFO" doc:name="Logger after the request" doc:id="fce1fc58-7b92-48cb-9722-3e54f6851c1c" message="#[payload]" />
+		<logger level="INFO" doc:name="Logger after the request to the sAPI" doc:id="b1e92d86-3da8-4a81-8f95-1f0b11a3f4aa" message='#[%dw 2.0&#10;output application/java&#10;---&#10;"After the request to the sAPI, with following body: " ++ write(payload, "application/json")]' />
 		<http:request doc:name="Request to sAPI to create the customer's order" doc:id="5a3b290d-65c4-4302-b960-595a25d3ecb8" method="POST" path="/customer/{customerID}/orders" config-ref="HTTP_Request_config">
 			<http:body ><![CDATA[#[vars.orders]]]></http:body>
 			<http:uri-params ><![CDATA[#[output application/java
 ---
 {
-	"customerID" : payload.user_id[0]
+	"customerID" : vars.customer.customerCode
 }]]]></http:uri-params>
 		</http:request>
-		<logger level="INFO" doc:name="Logger after the request" doc:id="910fd046-07df-4abe-b5bd-8c6471366c68" message="#[payload]" />
+		<logger level="INFO" doc:name="Logger after 2nd the request to the sAPI" doc:id="3a4c0f51-8d07-45f5-a75a-4b2227b2f80b" message='#[%dw 2.0&#10;output application/java&#10;---&#10;"After the request to the 2nd sAPI, with following body: " ++ write(payload, "application/json")]' />
 		<amqp:ack doc:name="Send ack to the queue" doc:id="e9e39d15-a604-43da-952e-b64e3efc6bd2" ackId="#[vars.ackID]"/>
 	</flow>
 </mule>

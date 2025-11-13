@@ -10,7 +10,7 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 	<flow name="put-update-order" doc:id="426dc68a-7766-4cf7-9081-0c9a60635f30" >
 		<amqp:listener doc:name="Listener at the queue put-update-order" doc:id="6c5cc9c0-e5d0-40a3-b7cc-c382c5c92f69" config-ref="AMQP_Config" queueName="put-update-order" ackMode="MANUAL"/>
 		<set-variable value="#[attributes.ackId]" doc:name="ackId" doc:id="a65462bf-dfe6-4507-b146-5edc87c53757" variableName="ackId"/>
-		<logger level="INFO" doc:name="Logger before the request" doc:id="1a21b6d2-3a58-4658-b636-e1ee87440c7a" message="#[payload]" />
+		<logger level="INFO" doc:name="Logger before the request to the sAPI" doc:id="e29fc302-952d-4ca5-91ee-7074637817a3" message='#[%dw 2.0&#10;output application/java&#10;---&#10;"Before the request to the sAPI, with following body: " ++ write(payload, "application/json")]' />
 		<http:request doc:name="Request to sAPI to update a specific order of a specific customer" doc:id="ee478b9d-e8ca-4b5b-bc9c-d25000fc07f9" config-ref="HTTP_Request_config" method="PUT" path="/customer/{customerID}/orders" sendCorrelationId="ALWAYS">
 			<http:uri-params ><![CDATA[#[output application/java
 ---
@@ -18,7 +18,7 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 	"customerID" : payload.URIparams
 }]]]></http:uri-params>
 		</http:request>
-		<logger level="INFO" doc:name="Logger after the request" doc:id="083ef12e-a400-4a04-bec0-3215defb05a9" message="#[payload]" />
+		<logger level="INFO" doc:name="Logger after the request to the sAPI" doc:id="d752ec4e-5fbc-43c2-9a19-35400dd81956" message='#[%dw 2.0&#10;output application/java&#10;---&#10;"After the request to the sAPI, with following body: " ++ write(payload, "application/json")]' />
 		<amqp:ack doc:name="Send ack to the queue" doc:id="e36f798b-4412-4cd2-8a40-a59c8d8b74d5" ackId="#[vars.ackId]"/>
 	</flow>
 </mule>

@@ -5,7 +5,8 @@
 	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
 	xmlns:http="http://www.mulesoft.org/schema/mule/http"
 	xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=" http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd  http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation=" http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd  http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
 http://www.mulesoft.org/schema/mule/amqp http://www.mulesoft.org/schema/mule/amqp/current/mule-amqp.xsd">
 	<http:listener-config
 		name="toy-store-papi-httpListenerConfig">
@@ -25,14 +26,27 @@ http://www.mulesoft.org/schema/mule/amqp http://www.mulesoft.org/schema/mule/amq
 		file="properties/${mule.env}.yaml" />
 	<http:request-config name="HTTP_Request_config"
 		doc:name="HTTP Request config"
-		doc:id="31d2fcc6-96d1-4ffc-ba73-bc9e10e96e20" basePath="/api" sendCorrelationId="ALWAYS">
+		doc:id="31d2fcc6-96d1-4ffc-ba73-bc9e10e96e20" basePath="/api"
+		sendCorrelationId="ALWAYS">
 		<http:request-connection
 			host="${http.request.host}" port="${http.request.port}" />
 	</http:request-config>
 	<amqp:config name="AMQP_Config" doc:name="AMQP Config"
 		doc:id="86d5da42-8ab4-4ac7-90ee-c4edb02344cd"
 		sendCorrelationId="ALWAYS">
-		<amqp:connection host="localhost" port="5672"
-			username="myuser" password="mypassword" />
+		<amqp:connection host="${rabbit.host}"
+			port="${rabbit.port}" username="${secure::rabbit.user}"
+			password="${secure::rabbit.password}" />
+		<amqp:consumer-config ackMode="MANUAL" />
 	</amqp:config>
+	<global-property doc:name="Global Property"
+		doc:id="63f50704-9a1d-4856-adab-3158159648ee" name="encryption.key"
+		value='""' />
+	<secure-properties:config
+		name="Secure_Properties_Config" doc:name="Secure Properties Config"
+		doc:id="38328e42-c916-4b84-80f6-369fce2cb710"
+		file="properties/${mule.env}-secure.yaml" key="${encryption.key}">
+		<secure-properties:encrypt
+			algorithm="Blowfish" />
+	</secure-properties:config>
 </mule>

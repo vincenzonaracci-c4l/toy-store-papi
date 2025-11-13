@@ -6,7 +6,7 @@
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 	<sub-flow name="get-customer" doc:id="f1196303-c8a6-41cc-81c1-99d3735d3d3c" >
-		<logger level="INFO" doc:name="Logger before the request" doc:id="c85e15bc-9540-4593-b859-5512f8052269" message="#[payload]" />
+		<logger level="INFO" doc:name="Logger before the request to the pAPI" doc:id="8ce3730c-798b-49ed-b932-e0ff5f4f295b" message='#[%dw 2.0&#10;output application/java&#10;---&#10;"Before the request to the sAPI, with following body: " ++ write(payload, "application/json")]' />
 		<http:request doc:name="Request to sAPI to get a single customer" doc:id="e87b1c47-69b7-4a7c-9322-d70d3dad5413" config-ref="HTTP_Request_config" path="/customer/{customerID}" target="customer">
 			<http:uri-params ><![CDATA[#[output application/java
 ---
@@ -14,7 +14,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	"customerID" : vars.URIparams
 }]]]></http:uri-params>
 		</http:request>
-		<logger level="INFO" doc:name="Logger after the  first request" doc:id="4023ddaf-15c2-47d7-ac88-6dfbc8a23323" message="#[vars.customer]" />
+		<logger level="INFO" doc:name="Logger after the request to the pAPI" doc:id="9ab1fa95-aec6-4dc0-8002-57306aff5a66" message='#[%dw 2.0&#10;output application/java&#10;---&#10;"After the request to the sAPI, with following body: " ++ write(payload, "application/json")]' />
 		<http:request doc:name="Request to sAPI to get the orders of a single customer" doc:id="f694bbf6-1400-44b7-afe7-1dfdee6cb936" config-ref="HTTP_Request_config" path="/customer/{customerID}/orders" target="orders">
 			<http:uri-params ><![CDATA[#[output application/java
 ---
@@ -22,7 +22,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	"customerID" : vars.URIparams
 }]]]></http:uri-params>
 		</http:request>
-		<logger level="INFO" doc:name="Logger after the request" doc:id="e223684f-6b8c-4476-91a7-ded9ca448bd9" message="#[vars.orders]" />
+		<logger level="INFO" doc:name="Logger after the 2nd request to the pAPI" doc:id="841f787c-532c-470f-b950-dd1157256594" message='#[%dw 2.0&#10;output application/java&#10;---&#10;"After the request to the sAPI, with following body: " ++ write(payload, "application/json")]' />
 		<ee:transform doc:name="Join the two request in a unique payload" doc:id="acaf502b-764b-4388-b60b-1398fe87f1fc" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
@@ -35,7 +35,7 @@ fun concatenate(x) = do {
 output application/json
 ---
 vars.customer map ((item, index) -> {
-	"customerCode": item.user_id,
+	"customerCode": item.customer_code,
 	"customerInfo": {
 		"firstName": item.first_name,
 		"lastName": item.last_name,
