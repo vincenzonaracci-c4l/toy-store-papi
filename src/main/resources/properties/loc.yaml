@@ -2,11 +2,32 @@ http:
   listener:
     host: "localhost"
     port: "8082"
-    
-  request:
-    host: "localhost"
-    port: "8083"
-    
+       
 rabbit:
   host: "localhost"
   port: "5672"
+  queue:
+    put-order: "put-update-order"
+    put-customer: "put-update-customer"
+    delete-orders: "delete-order"
+    delete-customer: "delete-customer"
+    post-customer: "post-create-customer"
+    
+sapi:
+  request:
+    host: "localhost"
+    port: "8083"
+    basepath: "/api"
+  reconnection:
+    timeout: "30000"
+  endpoint:
+    post-customer: "/customer"
+    post-order: "/customer/{customerID}/orders"
+    put-customer: "/customer/{customerID}"
+    put-order: "/customer/{customerID}/orders"
+    get-customer: "/customer"
+    get-one-customer: "/customer/{customerID}"
+    get-order: "/customer/{customerID}/orders"
+    delete-customer: "/customer/{customerID}"
+    delete-order: "/customer/{customerID}/orders"
+    

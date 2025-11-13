@@ -7,10 +7,10 @@ http://www.mulesoft.org/schema/mule/amqp http://www.mulesoft.org/schema/mule/amq
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 	<flow name="put-update-user" doc:id="c66692d0-3f74-42ee-a9c9-727e7e9ed1ab" >
-		<amqp:listener doc:name="Listener to the queue put-update-customer" doc:id="ff12b397-82b4-471a-bcb6-cdfbd6e7f659" config-ref="AMQP_Config" queueName="put-update-customer" ackMode="MANUAL"/>
+		<amqp:listener doc:name="Listener to the queue put-update-customer" doc:id="ff12b397-82b4-471a-bcb6-cdfbd6e7f659" config-ref="AMQP_Config" queueName="${rabbit.queue.put-update-customer}" ackMode="MANUAL"/>
 		<set-variable value="#[attributes.ackId]" doc:name="ackId" doc:id="d468172e-3a6e-46d6-8730-52d69737a574" variableName="ackId"/>
 		<logger level="INFO" doc:name="Logger before the request to the sAPI" doc:id="d68855e8-d736-4541-8066-568061801ace" message='#[%dw 2.0&#10;output application/java&#10;---&#10;"Before the request to the sAPI, with following body: " ++ write(payload, "application/json")]' />
-		<http:request doc:name="Request to sAPI to update a specific customer" doc:id="fe7c01e0-fc6b-4312-922c-407625df4618" config-ref="HTTP_Request_config" method="PUT" path="/customer/{customerID}">
+		<http:request doc:name="Request to sAPI to update a specific customer" doc:id="fe7c01e0-fc6b-4312-922c-407625df4618" config-ref="HTTP_Request_config" method="PUT" path="${papi.endpoint.put-customer}">
 			<http:uri-params ><![CDATA[#[output application/java
 ---
 {

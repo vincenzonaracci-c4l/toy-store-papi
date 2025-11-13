@@ -7,10 +7,10 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 http://www.mulesoft.org/schema/mule/amqp http://www.mulesoft.org/schema/mule/amqp/current/mule-amqp.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 	<flow name="delete-order" doc:id="8c87c269-8bab-4343-b854-ab8a0eb835d9" >
-		<amqp:listener doc:name="Listener to the queue put-update-order" doc:id="974669b6-ceb5-4c73-98eb-4b74d13990e6" config-ref="AMQP_Config" queueName="delete-order" ackMode="MANUAL" />
+		<amqp:listener doc:name="Listener to the queue delete-order" doc:id="974669b6-ceb5-4c73-98eb-4b74d13990e6" config-ref="AMQP_Config" queueName="${rabbit.queue.delete-order}" ackMode="MANUAL" />
 		<set-variable value="#[attributes.ackId]" doc:name="ackId" doc:id="68d76204-5ff6-4634-99b9-d3f76cc6dd12" variableName="ackId" />
 		<logger level="INFO" doc:name="Logger before the request to the sAPI" doc:id="9b2b684f-1b2b-4f47-af3a-372d03122a68" message='#[%dw 2.0&#10;output application/java&#10;---&#10;"Before the request to the sAPI, with following body: " ++ write(payload, "application/json")]' />
-		<http:request doc:name="Request to sAPI to delete a specific customer" doc:id="13738d53-814b-4472-85aa-7b3077f5cc01" config-ref="HTTP_Request_config" method="DELETE" path="/customer/{customerID}/orders" >
+		<http:request doc:name="Request to sAPI to delete a specific customer" doc:id="13738d53-814b-4472-85aa-7b3077f5cc01" config-ref="HTTP_Request_config" method="DELETE" path="${sapi.endpoint.delete-order}" >
 			<http:uri-params ><![CDATA[#[output application/java
 ---
 {

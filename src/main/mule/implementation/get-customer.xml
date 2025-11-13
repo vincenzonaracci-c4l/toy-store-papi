@@ -7,7 +7,7 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 	<sub-flow name="get-customer" doc:id="f1196303-c8a6-41cc-81c1-99d3735d3d3c" >
 		<logger level="INFO" doc:name="Logger before the request to the pAPI" doc:id="8ce3730c-798b-49ed-b932-e0ff5f4f295b" message='#[%dw 2.0&#10;output application/java&#10;---&#10;"Before the request to the sAPI, with following body: " ++ write(payload, "application/json")]' />
-		<http:request doc:name="Request to sAPI to get a single customer" doc:id="e87b1c47-69b7-4a7c-9322-d70d3dad5413" config-ref="HTTP_Request_config" path="/customer/{customerID}" target="customer">
+		<http:request doc:name="Request to sAPI to get a single customer" doc:id="e87b1c47-69b7-4a7c-9322-d70d3dad5413" config-ref="HTTP_Request_config" path="${sapi.endpoint.get-one-customer}" target="customer">
 			<http:uri-params ><![CDATA[#[output application/java
 ---
 {
@@ -15,7 +15,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 }]]]></http:uri-params>
 		</http:request>
 		<logger level="INFO" doc:name="Logger after the request to the pAPI" doc:id="9ab1fa95-aec6-4dc0-8002-57306aff5a66" message='#[%dw 2.0&#10;output application/java&#10;---&#10;"After the request to the sAPI, with following body: " ++ write(payload, "application/json")]' />
-		<http:request doc:name="Request to sAPI to get the orders of a single customer" doc:id="f694bbf6-1400-44b7-afe7-1dfdee6cb936" config-ref="HTTP_Request_config" path="/customer/{customerID}/orders" target="orders">
+		<http:request doc:name="Request to sAPI to get the orders of a single customer" doc:id="f694bbf6-1400-44b7-afe7-1dfdee6cb936" config-ref="HTTP_Request_config" path="${sapi.endpoint.get-order}" target="orders">
 			<http:uri-params ><![CDATA[#[output application/java
 ---
 {

@@ -7,7 +7,7 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 	<sub-flow name="get-customer-noord" doc:id="09f2cf2a-7790-4d29-a92c-b75aa3bc35bf" >
 		<logger level="INFO" doc:name="Logger after the request to the sAPI" doc:id="94e0c87d-8564-4464-ab16-efead5899503" message='#[%dw 2.0&#10;output application/java&#10;---&#10;"After the request to the sAPI, with following body: " ++ write(payload, "application/json")]' />
-		<http:request doc:name="Request to sAPI to get all the customer without order" doc:id="cf43e74c-2615-4346-90b4-3ce472734817" config-ref="HTTP_Request_config" path="/customer" >
+		<http:request doc:name="Request to sAPI to get all the customer without order" doc:id="cf43e74c-2615-4346-90b4-3ce472734817" config-ref="HTTP_Request_config" path="${sapi.endpoint.get-customer}" >
 		</http:request>
 		<logger level="INFO" doc:name="Logger before the request to the sAPI" doc:id="009ed8dd-dfae-4d17-8f46-ab6c9421d863" message='#[%dw 2.0&#10;output application/java&#10;---&#10;"Before the request to the sAPI, with following body: " ++ write(payload, "application/json")]' />
 	</sub-flow>
