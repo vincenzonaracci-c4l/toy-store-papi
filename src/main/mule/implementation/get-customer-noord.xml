@@ -6,8 +6,10 @@
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 	<sub-flow name="get-customer-noord" doc:id="09f2cf2a-7790-4d29-a92c-b75aa3bc35bf" >
+		<logger level="INFO" doc:name="Logger before the request" doc:id="fad5bda0-045b-456a-8a75-514f47d1ee4f" message="#[payload]" />
 		<http:request doc:name="Request to sAPI to get all the customer without order" doc:id="cf43e74c-2615-4346-90b4-3ce472734817" config-ref="HTTP_Request_config" path="/customer" >
 		</http:request>
+		<logger level="INFO" doc:name="Logger after the request" doc:id="242d3e80-a099-4f4d-9c62-7115a0c42a73" message="#[payload]" />
 		<ee:transform doc:name="Filter the payload to retrieve only the customer without order" doc:id="f3e094b2-a624-4220-8629-53cf2bf13f25" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0

@@ -36,9 +36,11 @@ output application/json
 attributes.ackId]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
+		<logger level="INFO" doc:name="Logger before the request" doc:id="0745ee13-07ff-4baf-9cc7-9b36cbdfe595" message="#[payload]" />
 		<http:request doc:name="Request to sAPI to create a new customer" doc:id="f4518da3-7c0a-4bc8-8afe-2af11403a1f9" config-ref="HTTP_Request_config" method="POST" path="/customer">
 			<http:body ><![CDATA[#[vars.customer]]]></http:body>
 		</http:request>
+		<logger level="INFO" doc:name="Logger after the request" doc:id="fce1fc58-7b92-48cb-9722-3e54f6851c1c" message="#[payload]" />
 		<http:request doc:name="Request to sAPI to create the customer's order" doc:id="5a3b290d-65c4-4302-b960-595a25d3ecb8" method="POST" path="/customer/{customerID}/orders" config-ref="HTTP_Request_config">
 			<http:body ><![CDATA[#[vars.orders]]]></http:body>
 			<http:uri-params ><![CDATA[#[output application/java
@@ -47,6 +49,7 @@ attributes.ackId]]></ee:set-variable>
 	"customerID" : payload.user_id[0]
 }]]]></http:uri-params>
 		</http:request>
+		<logger level="INFO" doc:name="Logger after the request" doc:id="910fd046-07df-4abe-b5bd-8c6471366c68" message="#[payload]" />
 		<amqp:ack doc:name="Send ack to the queue" doc:id="e9e39d15-a604-43da-952e-b64e3efc6bd2" ackId="#[vars.ackID]"/>
 	</flow>
 </mule>
