@@ -13,19 +13,6 @@
         <apikit:router config-ref="toy-store-papi-config" />
         <error-handler ref="Error_Handler_APIKIT" />
     </flow>
-    <flow name="toy-store-papi-console">
-        <http:listener config-ref="toy-store-papi-httpListenerConfig" path="/console/*">
-            <http:response statusCode="#[vars.httpStatus default 200]">
-                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
-            </http:response>
-            <http:error-response statusCode="#[vars.httpStatus default 500]">
-                <http:body>#[payload]</http:body>
-                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
-            </http:error-response>
-        </http:listener>
-        <apikit:console config-ref="toy-store-papi-config" />
-        <error-handler ref="Error_Handler_APIConsole" />
-    </flow>
     <flow name="get:\customer:toy-store-papi-config">
 		<flow-ref doc:name="get-customer-noord" doc:id="356c32b3-2558-4461-a75f-46e9fce09ded" name="get-customer-noord"/>
 		<error-handler ref="Error_Handler_APP" />
