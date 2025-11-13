@@ -23,16 +23,6 @@ http://www.mulesoft.org/schema/mule/amqp http://www.mulesoft.org/schema/mule/amq
 		doc:name="Configuration properties"
 		doc:id="be88f756-73f7-42b2-b774-ac31afb6e15c"
 		file="properties/${mule.env}.yaml" />
-	<global-property doc:name="Global Property"
-		doc:id="1f307cdd-376a-4a19-8c2f-867908718c53" name="key.store"
-		value="toystore" />
-	<secure-properties:config
-		name="Secure_Properties_Config" doc:name="Secure Properties Config"
-		doc:id="8a98f683-acef-4613-aeb1-97385950b58e"
-		file="properties/${mule.env}-secure.yaml" key="${key.store}">
-		<secure-properties:encrypt
-			algorithm="Blowfish" />
-	</secure-properties:config>
 	<http:request-config name="HTTP_Request_config"
 		doc:name="HTTP Request config"
 		doc:id="31d2fcc6-96d1-4ffc-ba73-bc9e10e96e20" basePath="/api" sendCorrelationId="ALWAYS">

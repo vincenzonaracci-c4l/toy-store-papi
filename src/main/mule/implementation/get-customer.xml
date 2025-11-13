@@ -20,7 +20,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	"customerID" : vars.URIparams
 }]]]></http:uri-params>
 		</http:request>
-		<ee:transform doc:name="Transform Message" doc:id="acaf502b-764b-4388-b60b-1398fe87f1fc" >
+		<ee:transform doc:name="Join the two request in a unique payload" doc:id="acaf502b-764b-4388-b60b-1398fe87f1fc" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 fun sumNumber(x) = do {

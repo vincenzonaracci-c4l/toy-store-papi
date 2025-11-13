@@ -8,7 +8,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	<sub-flow name="get-customer-noord" doc:id="09f2cf2a-7790-4d29-a92c-b75aa3bc35bf" >
 		<http:request doc:name="Request to sAPI to get all the customer without order" doc:id="cf43e74c-2615-4346-90b4-3ce472734817" config-ref="HTTP_Request_config" path="/customer" >
 		</http:request>
-		<ee:transform doc:name="Transform Message" doc:id="f3e094b2-a624-4220-8629-53cf2bf13f25" >
+		<ee:transform doc:name="Filter the payload to retrieve only the customer without order" doc:id="f3e094b2-a624-4220-8629-53cf2bf13f25" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json

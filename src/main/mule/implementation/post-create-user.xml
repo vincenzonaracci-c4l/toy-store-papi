@@ -8,7 +8,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 	<flow name="post-create-user" doc:id="43ab084d-3900-433f-84ce-369b5573e590" >
 		<amqp:listener doc:name="Listener at the queue post-create-customer" doc:id="ccb409cd-a9f7-4a8d-adf9-cd7207c05ba5" config-ref="AMQP_Config" queueName="post-create-customer" ackMode="MANUAL"/>
-		<ee:transform doc:name="Split the payload in two variable (customer and orders)" doc:id="756a7aa7-afb4-42f2-baa1-b70e333acd9e" >
+		<ee:transform doc:name="Split the payload and store the ackId" doc:id="756a7aa7-afb4-42f2-baa1-b70e333acd9e" >
 			<ee:message >
 			</ee:message>
 			<ee:variables >
@@ -47,6 +47,6 @@ attributes.ackId]]></ee:set-variable>
 	"customerID" : payload.user_id[0]
 }]]]></http:uri-params>
 		</http:request>
-		<amqp:ack doc:name="Ack" doc:id="e9e39d15-a604-43da-952e-b64e3efc6bd2" ackId="#[vars.ackID]"/>
+		<amqp:ack doc:name="Send ack to the queue" doc:id="e9e39d15-a604-43da-952e-b64e3efc6bd2" ackId="#[vars.ackID]"/>
 	</flow>
 </mule>
