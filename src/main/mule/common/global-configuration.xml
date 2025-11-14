@@ -26,10 +26,10 @@ http://www.mulesoft.org/schema/mule/amqp http://www.mulesoft.org/schema/mule/amq
 		file="properties/${mule.env}.yaml" />
 	<http:request-config name="HTTP_Request_config"
 		doc:name="HTTP Request config"
-		doc:id="31d2fcc6-96d1-4ffc-ba73-bc9e10e96e20" basePath="/api"
-		sendCorrelationId="ALWAYS">
+		doc:id="31d2fcc6-96d1-4ffc-ba73-bc9e10e96e20" basePath="${sapi.basepath}"
+		sendCorrelationId="ALWAYS" responseTimeout="${sapi.reconnection.timeout}">
 		<http:request-connection
-			host="${http.request.host}" port="${http.request.port}" />
+			host="${sapi.request.host}" port="${sapi.request.port}" />
 	</http:request-config>
 	<amqp:config name="AMQP_Config" doc:name="AMQP Config"
 		doc:id="86d5da42-8ab4-4ac7-90ee-c4edb02344cd"
