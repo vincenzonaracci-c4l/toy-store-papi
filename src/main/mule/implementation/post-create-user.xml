@@ -39,7 +39,7 @@ attributes.ackId]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
 		<logger level="INFO" doc:name="Logger before the request to the sAPI" doc:id="aa6d8902-3880-427f-ade5-b6ff33667215" message='#[%dw 2.0&#10;output application/java&#10;---&#10;"Before the request to the sAPI, with following body: " ++ write(payload, "application/json")]' />
-		<http:request doc:name="Request to sAPI to create a new customer" doc:id="f4518da3-7c0a-4bc8-8afe-2af11403a1f9" config-ref="HTTP_Request_config" method="POST" path="${papi.endpoint.post-customer}">
+		<http:request doc:name="Request to sAPI to create a new customer" doc:id="f4518da3-7c0a-4bc8-8afe-2af11403a1f9" config-ref="HTTP_Request_config" method="POST" path="${sapi.endpoint.post-customer}">
 			<http:body ><![CDATA[#[vars.customer]]]></http:body>
 		</http:request>
 		<logger level="INFO" doc:name="Logger after the request to the sAPI" doc:id="b1e92d86-3da8-4a81-8f95-1f0b11a3f4aa" message='#[%dw 2.0&#10;output application/java&#10;---&#10;"After the request to the sAPI, with following body: " ++ write(payload, "application/json")]' />

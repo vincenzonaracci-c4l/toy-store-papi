@@ -8,8 +8,8 @@ rabbit:
   port: "5672"
   queue:
     put-order: "put-update-order"
-    put-customer: "put-update-customer"
-    delete-orders: "delete-order"
+    put-update-customer: "put-update-customer"
+    delete-order: "delete-order"
     delete-customer: "delete-customer"
     post-customer: "post-create-customer"
     

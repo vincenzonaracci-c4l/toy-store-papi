@@ -26,7 +26,7 @@ http://www.mulesoft.org/schema/mule/amqp http://www.mulesoft.org/schema/mule/amq
 		file="properties/${mule.env}.yaml" />
 	<http:request-config name="HTTP_Request_config"
 		doc:name="HTTP Request config"
-		doc:id="31d2fcc6-96d1-4ffc-ba73-bc9e10e96e20" basePath="${sapi.basepath}"
+		doc:id="31d2fcc6-96d1-4ffc-ba73-bc9e10e96e20" basePath="${sapi.request.basepath}"
 		sendCorrelationId="ALWAYS" responseTimeout="${sapi.reconnection.timeout}">
 		<http:request-connection
 			host="${sapi.request.host}" port="${sapi.request.port}" />
